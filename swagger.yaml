@@ -2,13 +2,14 @@
 openapi: 3.1.0
 info:
   title: 몽향 API Doc
-  description: 몽향 프로젝트 API 문서
+  description: 몽향 프로젝트 API 문서(개발 중)
   version: 1.0.0
 servers:
 - url: http://localhost:8080
   description: Generated server url
-security:
-- JWT: []
+tags:
+- name: 양조장 관리자용 API
+  description: 양조장 권한을 가진 회원만 접근할 수 있습니다.
 paths:
   "/api/user/update":
     post:
@@ -46,6 +47,7 @@ paths:
     post:
       tags:
       - 양조장 관리자용 API
+      summary: 양조장 정보 수정
       operationId: updateImageList
       parameters:
       - name: userId
@@ -97,6 +99,7 @@ paths:
       tags:
       - 회원가입 및 인증과 관련된 API
       summary: 판매자 회원의 회원가입
+      description: 'nickname: 판매자 상호명, name: 판매자 대표자명'
       operationId: sellerJoin
       requestBody:
         content:
@@ -147,6 +150,7 @@ paths:
       tags:
       - 회원가입 및 인증과 관련된 API
       summary: 양조장 회원의 회원가입
+      description: 'nickname: 양조장 상호명, name: 양조장 대표자명'
       operationId: breweryJoin
       requestBody:
         content:
@@ -249,6 +253,7 @@ paths:
       tags:
       - 양조장 관리자용 API
       summary: 양조장 삭제 처리
+      description: 해당 회원의 기존 비밀번호를 입력받고, 일치하는지 검사합니다.
       operationId: breweryQuit
       parameters:
       - name: quitRequestDto
@@ -558,8 +563,11 @@ components:
         content:
           "$ref": "#/components/schemas/ResUsersDto"
   securitySchemes:
-    JWT:
-      type: http
-      name: JWT
-      scheme: access_token
-      bearerFormat: JWT
+    SessionID:
+      type: apiKey
+      name: X-Session-Id
+      in: header
+    RefreshToken:
+      type: apiKey
+      name: X-Refresh-Token
+      in: header

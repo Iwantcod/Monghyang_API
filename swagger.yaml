@@ -1,718 +1,565 @@
 ---
-swagger: "2.0"
+openapi: 3.1.0
 info:
-  description: "This is a sample server Petstore server.  You can find out more about\
-    \ Swagger at [http://swagger.io](http://swagger.io) or on [irc.freenode.net, #swagger](http://swagger.io/irc/).\
-    \  For this sample, you can use the api key `special-key` to test the authorization\
-    \ filters."
-  version: "1.0.5"
-  title: "Swagger Petstore"
-  termsOfService: "http://swagger.io/terms/"
-  contact:
-    email: "apiteam@swagger.io"
-  license:
-    name: "Apache 2.0"
-    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
-host: "petstore.swagger.io"
-basePath: "/v2"
-tags:
-- name: "pet"
-  description: "Everything about your Pets"
-  externalDocs:
-    description: "Find out more"
-    url: "http://swagger.io"
-- name: "store"
-  description: "Access to Petstore orders"
-- name: "user"
-  description: "Operations about user"
-  externalDocs:
-    description: "Find out more about our store"
-    url: "http://swagger.io"
-schemes:
-- "https"
-- "http"
+  title: 몽향 API Doc
+  description: 몽향 프로젝트 API 문서
+  version: 1.0.0
+servers:
+- url: http://localhost:8080
+  description: Generated server url
+security:
+- JWT: []
 paths:
-  /pet/{petId}/uploadImage:
+  "/api/user/update":
     post:
       tags:
-      - "pet"
-      summary: "uploads an image"
-      description: ""
-      operationId: "uploadFile"
-      consumes:
-      - "multipart/form-data"
-      produces:
-      - "application/json"
+      - 회원 공통 API
+      summary: 회원 수정 api
+      description: 비밀번호 변경 시 '기존 비밀번호'와 '새 비밀번호'를 각각의 필드에 입력하여 전송해주셔야 합니다. 수정 성공 시
+        해당 유저의 모든 로그인 상태 정보가 서버에서 제거됩니다.
+      operationId: updateUsers
       parameters:
-      - name: "petId"
-        in: "path"
-        description: "ID of pet to update"
-        required: true
-        type: "integer"
-        format: "int64"
-      - name: "additionalMetadata"
-        in: "formData"
-        description: "Additional data to pass to server"
-        required: false
-        type: "string"
-      - name: "file"
-        in: "formData"
-        description: "file to upload"
-        required: false
-        type: "file"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            $ref: "#/definitions/ApiResponse"
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-  /pet:
-    post:
-      tags:
-      - "pet"
-      summary: "Add a new pet to the store"
-      description: ""
-      operationId: "addPet"
-      consumes:
-      - "application/json"
-      - "application/xml"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "Pet object that needs to be added to the store"
+      - name: userId
+        in: query
         required: true
         schema:
-          $ref: "#/definitions/Pet"
-      responses:
-        405:
-          description: "Invalid input"
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-    put:
-      tags:
-      - "pet"
-      summary: "Update an existing pet"
-      description: ""
-      operationId: "updatePet"
-      consumes:
-      - "application/json"
-      - "application/xml"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "Pet object that needs to be added to the store"
+          type: integer
+          format: int64
+      - name: userRole
+        in: query
         required: true
         schema:
-          $ref: "#/definitions/Pet"
-      responses:
-        400:
-          description: "Invalid ID supplied"
-        404:
-          description: "Pet not found"
-        405:
-          description: "Validation exception"
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-  /pet/findByStatus:
-    get:
-      tags:
-      - "pet"
-      summary: "Finds Pets by status"
-      description: "Multiple status values can be provided with comma separated strings"
-      operationId: "findPetsByStatus"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "status"
-        in: "query"
-        description: "Status values that need to be considered for filter"
+          type: string
+      - name: reqUsersDto
+        in: query
         required: true
-        type: "array"
-        items:
-          type: "string"
-          enum:
-          - "available"
-          - "pending"
-          - "sold"
-          default: "available"
-        collectionFormat: "multi"
+        schema:
+          "$ref": "#/components/schemas/ReqUsersDto"
       responses:
-        200:
-          description: "successful operation"
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/Pet"
-        400:
-          description: "Invalid status value"
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-  /pet/findByTags:
-    get:
-      tags:
-      - "pet"
-      summary: "Finds Pets by tags"
-      description: "Multiple tags can be provided with comma separated strings. Use\
-        \ tag1, tag2, tag3 for testing."
-      operationId: "findPetsByTags"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "tags"
-        in: "query"
-        description: "Tags to filter by"
-        required: true
-        type: "array"
-        items:
-          type: "string"
-        collectionFormat: "multi"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/Pet"
-        400:
-          description: "Invalid tag value"
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-      deprecated: true
-  /pet/{petId}:
-    get:
-      tags:
-      - "pet"
-      summary: "Find pet by ID"
-      description: "Returns a single pet"
-      operationId: "getPetById"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "petId"
-        in: "path"
-        description: "ID of pet to return"
-        required: true
-        type: "integer"
-        format: "int64"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            $ref: "#/definitions/Pet"
-        400:
-          description: "Invalid ID supplied"
-        404:
-          description: "Pet not found"
-      security:
-      - api_key: []
+        '200':
+          description: OK
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ResponseDataDtoVoid"
+  "/api/brewery-priv/update":
     post:
       tags:
-      - "pet"
-      summary: "Updates a pet in the store with form data"
-      description: ""
-      operationId: "updatePetWithForm"
-      consumes:
-      - "application/x-www-form-urlencoded"
-      produces:
-      - "application/json"
-      - "application/xml"
+      - 양조장 관리자용 API
+      operationId: updateImageList
       parameters:
-      - name: "petId"
-        in: "path"
-        description: "ID of pet that needs to be updated"
+      - name: userId
+        in: query
         required: true
-        type: "integer"
-        format: "int64"
-      - name: "name"
-        in: "formData"
-        description: "Updated name of the pet"
-        required: false
-        type: "string"
-      - name: "status"
-        in: "formData"
-        description: "Updated status of the pet"
-        required: false
-        type: "string"
+        schema:
+          type: integer
+          format: int64
+      - name: reqBreweryDto
+        in: query
+        required: true
+        schema:
+          "$ref": "#/components/schemas/ReqBreweryDto"
       responses:
-        405:
-          description: "Invalid input"
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
+        '200':
+          description: OK
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ResponseDataDtoVoid"
+  "/api/auth/verify-pw":
+    post:
+      tags:
+      - 회원가입 및 인증과 관련된 API
+      summary: 기존 비밀번호 검증 API
+      description: 정보 수정 등의 동작을 수행하기 전과 같은 상황에서 사용
+      operationId: checkPassword
+      parameters:
+      - name: userId
+        in: query
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: verifyAuthDto
+        in: query
+        required: true
+        schema:
+          "$ref": "#/components/schemas/VerifyAuthDto"
+      responses:
+        '200':
+          description: OK
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ResponseDataDtoVoid"
+  "/api/auth/seller-join":
+    post:
+      tags:
+      - 회원가입 및 인증과 관련된 API
+      summary: 판매자 회원의 회원가입
+      operationId: sellerJoin
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              "$ref": "#/components/schemas/SellerJoinDto"
+      responses:
+        '200':
+          description: OK
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ResponseDataDtoVoid"
+  "/api/auth/refresh":
+    post:
+      tags:
+      - 회원가입 및 인증과 관련된 API
+      summary: 세션 및 토큰 갱신
+      description: 중복 로그인 감지 시 로그아웃해야 합니다.
+      operationId: tokenRefresh
+      responses:
+        '200':
+          description: OK
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ResponseDataDtoVoid"
+  "/api/auth/common-join":
+    post:
+      tags:
+      - 회원가입 및 인증과 관련된 API
+      summary: 일반 회원의 플랫폼 회원가입
+      operationId: commonJoin
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              "$ref": "#/components/schemas/JoinDto"
+      responses:
+        '200':
+          description: OK
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ResponseDataDtoVoid"
+  "/api/auth/brewery-join":
+    post:
+      tags:
+      - 회원가입 및 인증과 관련된 API
+      summary: 양조장 회원의 회원가입
+      operationId: breweryJoin
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              "$ref": "#/components/schemas/BreweryJoinDto"
+      responses:
+        '200':
+          description: OK
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ResponseDataDtoVoid"
+  "/api/user/email/{email}":
+    get:
+      tags:
+      - 회원 공통 API
+      summary: Email로 회원을 조회합니다.
+      operationId: getUsersByEmail
+      parameters:
+      - name: email
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ResponseDataDtoResUsersDto"
+  "/api/image/{imageFullName}":
+    get:
+      tags:
+      - 이미지 파일 요청 API
+      summary: 실제 이미지 파일 요청 API
+      description: 이미지 키에 해당되는 uuid를 url 파라메터에 넣어주세요.
+      operationId: loadImage
+      parameters:
+      - name: imageFullName
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: string
+                format: binary
+  "/api/auth/check-email/{email}":
+    get:
+      tags:
+      - 회원가입 및 인증과 관련된 API
+      summary: 이메일 중복체크
+      operationId: checkEmail
+      parameters:
+      - name: email
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ResponseDataDtoVoid"
+  "/api/user":
     delete:
       tags:
-      - "pet"
-      summary: "Deletes a pet"
-      description: ""
-      operationId: "deletePet"
-      produces:
-      - "application/json"
-      - "application/xml"
+      - 회원 공통 API
+      summary: 회원 탈퇴 API
+      operationId: deleteUsers
       parameters:
-      - name: "api_key"
-        in: "header"
-        required: false
-        type: "string"
-      - name: "petId"
-        in: "path"
-        description: "Pet id to delete"
-        required: true
-        type: "integer"
-        format: "int64"
-      responses:
-        400:
-          description: "Invalid ID supplied"
-        404:
-          description: "Pet not found"
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-  /store/order:
-    post:
-      tags:
-      - "store"
-      summary: "Place an order for a pet"
-      description: ""
-      operationId: "placeOrder"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "order placed for purchasing the pet"
+      - name: userId
+        in: query
         required: true
         schema:
-          $ref: "#/definitions/Order"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            $ref: "#/definitions/Order"
-        400:
-          description: "Invalid Order"
-  /store/order/{orderId}:
-    get:
-      tags:
-      - "store"
-      summary: "Find purchase order by ID"
-      description: "For valid response try integer IDs with value >= 1 and <= 10.\
-        \ Other values will generated exceptions"
-      operationId: "getOrderById"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "orderId"
-        in: "path"
-        description: "ID of pet that needs to be fetched"
+          type: integer
+          format: int64
+      - name: userRole
+        in: query
         required: true
-        type: "integer"
-        maximum: 10
-        minimum: 1
-        format: "int64"
+        schema:
+          type: string
       responses:
-        200:
-          description: "successful operation"
-          schema:
-            $ref: "#/definitions/Order"
-        400:
-          description: "Invalid ID supplied"
-        404:
-          description: "Order not found"
+        '200':
+          description: OK
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ResponseDataDtoVoid"
+  "/api/brewery-priv":
     delete:
       tags:
-      - "store"
-      summary: "Delete purchase order by ID"
-      description: "For valid response try integer IDs with positive integer value.\
-        \ Negative or non-integer values will generate API errors"
-      operationId: "deleteOrder"
-      produces:
-      - "application/json"
-      - "application/xml"
+      - 양조장 관리자용 API
+      summary: 양조장 삭제 처리
+      operationId: breweryQuit
       parameters:
-      - name: "orderId"
-        in: "path"
-        description: "ID of the order that needs to be deleted"
-        required: true
-        type: "integer"
-        minimum: 1
-        format: "int64"
-      responses:
-        400:
-          description: "Invalid ID supplied"
-        404:
-          description: "Order not found"
-  /store/inventory:
-    get:
-      tags:
-      - "store"
-      summary: "Returns pet inventories by status"
-      description: "Returns a map of status codes to quantities"
-      operationId: "getInventory"
-      produces:
-      - "application/json"
-      parameters: []
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            type: "object"
-            additionalProperties:
-              type: "integer"
-              format: "int32"
-      security:
-      - api_key: []
-  /user/createWithArray:
-    post:
-      tags:
-      - "user"
-      summary: "Creates list of users with given input array"
-      description: ""
-      operationId: "createUsersWithArrayInput"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "List of user object"
+      - name: quitRequestDto
+        in: query
         required: true
         schema:
-          type: "array"
+          "$ref": "#/components/schemas/VerifyAuthDto"
+      - name: userId
+        in: query
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ResponseDataDtoVoid"
+components:
+  schemas:
+    ReqUsersDto:
+      type: object
+      properties:
+        email:
+          type: string
+        curPassword:
+          type: string
+        newPassword:
+          type: string
+        nickname:
+          type: string
+        name:
+          type: string
+        phone:
+          type: string
+        birth:
+          type: string
+          format: date
+        gender:
+          type: string
+        address:
+          type: string
+        address_detail:
+          type: string
+    ResponseDataDtoVoid:
+      type: object
+      properties:
+        status:
+          type: integer
+          format: int32
+        message:
+          type: string
+        content:
+          type: object
+    AddImageDto:
+      type: object
+      properties:
+        image:
+          type: string
+          format: binary
+        seq:
+          type: integer
+          format: int32
+    ModifySeqImageDto:
+      type: object
+      properties:
+        image_id:
+          type: integer
+          format: int64
+        seq:
+          type: integer
+          format: int32
+    ReqBreweryDto:
+      type: object
+      properties:
+        brewery_name:
+          type: string
+        brewery_address:
+          type: string
+        brewery_address_detail:
+          type: string
+        business_registration_number:
+          type: string
+        brewery_depositor:
+          type: string
+        brewery_account_number:
+          type: string
+        brewery_bank_name:
+          type: string
+        introduction:
+          type: string
+        brewery_website:
+          type: string
+        is_regular_visit:
+          type: boolean
+        add_images:
+          type: array
           items:
-            $ref: "#/definitions/User"
-      responses:
-        default:
-          description: "successful operation"
-  /user/createWithList:
-    post:
-      tags:
-      - "user"
-      summary: "Creates list of users with given input array"
-      description: ""
-      operationId: "createUsersWithListInput"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "List of user object"
-        required: true
-        schema:
-          type: "array"
+            "$ref": "#/components/schemas/AddImageDto"
+        modify_images:
+          type: array
           items:
-            $ref: "#/definitions/User"
-      responses:
-        default:
-          description: "successful operation"
-  /user/{username}:
-    get:
-      tags:
-      - "user"
-      summary: "Get user by user name"
-      description: ""
-      operationId: "getUserByName"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "username"
-        in: "path"
-        description: "The name that needs to be fetched. Use user1 for testing. "
-        required: true
-        type: "string"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            $ref: "#/definitions/User"
-        400:
-          description: "Invalid username supplied"
-        404:
-          description: "User not found"
-    put:
-      tags:
-      - "user"
-      summary: "Updated user"
-      description: "This can only be done by the logged in user."
-      operationId: "updateUser"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "username"
-        in: "path"
-        description: "name that need to be updated"
-        required: true
-        type: "string"
-      - in: "body"
-        name: "body"
-        description: "Updated user object"
-        required: true
-        schema:
-          $ref: "#/definitions/User"
-      responses:
-        400:
-          description: "Invalid user supplied"
-        404:
-          description: "User not found"
-    delete:
-      tags:
-      - "user"
-      summary: "Delete user"
-      description: "This can only be done by the logged in user."
-      operationId: "deleteUser"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "username"
-        in: "path"
-        description: "The name that needs to be deleted"
-        required: true
-        type: "string"
-      responses:
-        400:
-          description: "Invalid username supplied"
-        404:
-          description: "User not found"
-  /user/login:
-    get:
-      tags:
-      - "user"
-      summary: "Logs user into the system"
-      description: ""
-      operationId: "loginUser"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "username"
-        in: "query"
-        description: "The user name for login"
-        required: true
-        type: "string"
-      - name: "password"
-        in: "query"
-        description: "The password for login in clear text"
-        required: true
-        type: "string"
-      responses:
-        200:
-          description: "successful operation"
-          headers:
-            X-Expires-After:
-              type: "string"
-              format: "date-time"
-              description: "date in UTC when token expires"
-            X-Rate-Limit:
-              type: "integer"
-              format: "int32"
-              description: "calls per hour allowed by the user"
-          schema:
-            type: "string"
-        400:
-          description: "Invalid username/password supplied"
-  /user/logout:
-    get:
-      tags:
-      - "user"
-      summary: "Logs out current logged in user session"
-      description: ""
-      operationId: "logoutUser"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters: []
-      responses:
-        default:
-          description: "successful operation"
-  /user:
-    post:
-      tags:
-      - "user"
-      summary: "Create user"
-      description: "This can only be done by the logged in user."
-      operationId: "createUser"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "Created user object"
-        required: true
-        schema:
-          $ref: "#/definitions/User"
-      responses:
-        default:
-          description: "successful operation"
-securityDefinitions:
-  api_key:
-    type: "apiKey"
-    name: "api_key"
-    in: "header"
-  petstore_auth:
-    type: "oauth2"
-    authorizationUrl: "https://petstore.swagger.io/oauth/authorize"
-    flow: "implicit"
-    scopes:
-      read:pets: "read your pets"
-      write:pets: "modify pets in your account"
-definitions:
-  ApiResponse:
-    type: "object"
-    properties:
-      code:
-        type: "integer"
-        format: "int32"
-      type:
-        type: "string"
-      message:
-        type: "string"
-  Category:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      name:
-        type: "string"
-    xml:
-      name: "Category"
-  Pet:
-    type: "object"
-    required:
-    - "name"
-    - "photoUrls"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      category:
-        $ref: "#/definitions/Category"
-      name:
-        type: "string"
-        example: "doggie"
-      photoUrls:
-        type: "array"
-        xml:
-          wrapped: true
-        items:
-          type: "string"
-          xml:
-            name: "photoUrl"
-      tags:
-        type: "array"
-        xml:
-          wrapped: true
-        items:
-          xml:
-            name: "tag"
-          $ref: "#/definitions/Tag"
-      status:
-        type: "string"
-        description: "pet status in the store"
-        enum:
-        - "available"
-        - "pending"
-        - "sold"
-    xml:
-      name: "Pet"
-  Tag:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      name:
-        type: "string"
-    xml:
-      name: "Tag"
-  Order:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      petId:
-        type: "integer"
-        format: "int64"
-      quantity:
-        type: "integer"
-        format: "int32"
-      shipDate:
-        type: "string"
-        format: "date-time"
-      status:
-        type: "string"
-        description: "Order Status"
-        enum:
-        - "placed"
-        - "approved"
-        - "delivered"
-      complete:
-        type: "boolean"
-    xml:
-      name: "Order"
-  User:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      username:
-        type: "string"
-      firstName:
-        type: "string"
-      lastName:
-        type: "string"
-      email:
-        type: "string"
-      password:
-        type: "string"
-      phone:
-        type: "string"
-      userStatus:
-        type: "integer"
-        format: "int32"
-        description: "User Status"
-    xml:
-      name: "User"
-externalDocs:
-  description: "Find out more about Swagger"
-  url: "http://swagger.io"
+            "$ref": "#/components/schemas/ModifySeqImageDto"
+        remove_images:
+          type: array
+          items:
+            type: integer
+            format: int64
+    VerifyAuthDto:
+      type: object
+      properties:
+        password:
+          type: string
+      required:
+      - password
+    SellerJoinDto:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+        nickname:
+          type: string
+        name:
+          type: string
+        phone:
+          type: string
+        birth:
+          type: string
+          format: date
+        gender:
+          type: string
+        address:
+          type: string
+        address_detail:
+          type: string
+        is_agreed:
+          type: boolean
+        business_registration_number:
+          type: string
+        seller_account_number:
+          type: string
+        seller_depositor:
+          type: string
+        seller_bank_name:
+          type: string
+        introduction:
+          type: string
+        is_agreed_seller:
+          type: boolean
+        images:
+          type: array
+          items:
+            "$ref": "#/components/schemas/AddImageDto"
+      required:
+      - address
+      - address_detail
+      - birth
+      - business_registration_number
+      - email
+      - gender
+      - is_agreed
+      - is_agreed_seller
+      - name
+      - nickname
+      - password
+      - phone
+      - seller_account_number
+      - seller_bank_name
+      - seller_depositor
+    JoinDto:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+        nickname:
+          type: string
+        name:
+          type: string
+        phone:
+          type: string
+        birth:
+          type: string
+          format: date
+        gender:
+          type: string
+        address:
+          type: string
+        address_detail:
+          type: string
+        is_agreed:
+          type: boolean
+      required:
+      - address
+      - address_detail
+      - birth
+      - email
+      - gender
+      - is_agreed
+      - name
+      - nickname
+      - password
+      - phone
+    BreweryJoinDto:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+        nickname:
+          type: string
+        name:
+          type: string
+        phone:
+          type: string
+        birth:
+          type: string
+          format: date
+        gender:
+          type: string
+        address:
+          type: string
+        address_detail:
+          type: string
+        is_agreed:
+          type: boolean
+        business_registration_number:
+          type: string
+        brewery_depositor:
+          type: string
+        brewery_account_number:
+          type: string
+        brewery_bank_name:
+          type: string
+        introduction:
+          type: string
+        brewery_website:
+          type: string
+        images:
+          type: array
+          items:
+            "$ref": "#/components/schemas/AddImageDto"
+        region_type_id:
+          type: integer
+          format: int32
+        is_regular_visit:
+          type: boolean
+        is_agreed_brewery:
+          type: boolean
+      required:
+      - address
+      - address_detail
+      - birth
+      - brewery_account_number
+      - brewery_bank_name
+      - brewery_depositor
+      - business_registration_number
+      - email
+      - gender
+      - is_agreed
+      - is_agreed_brewery
+      - is_regular_visit
+      - name
+      - nickname
+      - password
+      - phone
+      - region_type_id
+    ResUsersDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        role:
+          type: string
+        email:
+          type: string
+        nickname:
+          type: string
+        name:
+          type: string
+        phone:
+          type: string
+        birth:
+          type: string
+          format: date
+        gender:
+          type: string
+        address:
+          type: string
+        address_detail:
+          type: string
+    ResponseDataDtoResUsersDto:
+      type: object
+      properties:
+        status:
+          type: integer
+          format: int32
+        message:
+          type: string
+        content:
+          "$ref": "#/components/schemas/ResUsersDto"
+  securitySchemes:
+    JWT:
+      type: http
+      name: JWT
+      scheme: access_token
+      bearerFormat: JWT
